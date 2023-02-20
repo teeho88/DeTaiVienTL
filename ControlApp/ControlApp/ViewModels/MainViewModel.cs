@@ -146,16 +146,21 @@ namespace ControlApp.ViewModels
 
         private void RFC_Calib(object sender, SerialDataReceivedEventArgs e)
         {
-            dataReceivStr += serial.ReadExisting();
+            string comingStr = serial.ReadExisting();
+            dataReceivStr = comingStr;
             int startIdx = dataReceivStr.IndexOf('>');
             dataReceivStr = dataReceivStr.Substring(startIdx + 1);
             int endIdx = dataReceivStr.IndexOf('\r');
             string tempStr = dataReceivStr.Substring(0, endIdx);
             int tempInt;
-            if(int.TryParse(tempStr,out tempInt))
+            if (int.TryParse(tempStr, out tempInt))
             {
                 RFCValue.Add(tempInt);
                 Text2Show = tempStr;
+            }
+            else
+            {
+                Text2Show = comingStr;
             }
         }
 
