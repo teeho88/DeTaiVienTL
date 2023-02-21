@@ -32,16 +32,15 @@ float gyr_reg_bias[3];
 //test
 uint32_t errtest;
 uint32_t countTest;
+
 //Fucntion Definitions
 //1- i2c Handler 
-void MPU6050_Init(I2C_HandleTypeDef *I2Chnd, MPU_ConfigTypeDef *mpuCon, RawData_Def* Acc, RawData_Def* Gyr)
+void MPU6050_Init(I2C_HandleTypeDef *I2Chnd, MPU_ConfigTypeDef *mpuCon)
 {
 	//Copy I2C CubeMX handle to local library
 	memcpy(&i2cHandler, I2Chnd, sizeof(*I2Chnd));
 	//MPU config handle to local library
 	MpuConfig = mpuCon;
-	Acc = &Accel;
-	Gyr = &Gyro;
 }
 
 //2- i2c Read
@@ -200,6 +199,7 @@ HAL_StatusTypeDef ReadI2C_MPU(void)
 	}
 	else
 	{
+		HAL_I2C_Init(&i2cHandler);
 		MPU6050_Config();
 		errtest++;
 		return HAL_ERROR;

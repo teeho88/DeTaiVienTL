@@ -130,7 +130,7 @@ extern "C" {
 #endif
 //Function Prototype
 //1- i2c Handler 
-void MPU6050_Init(I2C_HandleTypeDef *I2Chnd, MPU_ConfigTypeDef *mpuCon, RawData_Def* Acc, RawData_Def* Gyr);
+void MPU6050_Init(I2C_HandleTypeDef *I2Chnd, MPU_ConfigTypeDef *mpuCon);
 //2- i2c Read
 HAL_StatusTypeDef I2C_Read(uint8_t ADDR, uint8_t *i2cBuf, uint8_t NofData);
 //3- i2c Write 8 Bit

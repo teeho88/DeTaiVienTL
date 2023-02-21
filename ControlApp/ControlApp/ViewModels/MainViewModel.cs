@@ -56,6 +56,8 @@ namespace ControlApp.ViewModels
                     ConnectBT_Text = "CONNECT";
                     CalibRFC_Text = "CALIB RFC";
                     ReadContent = "READ";
+                    serial.DataReceived -= SerialHandlerRecord;
+                    Text2Show = "";
                     MessageBox.Show("Closed");
                 }
             });
@@ -166,10 +168,14 @@ namespace ControlApp.ViewModels
 
         private void Serial_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            string str = serial.ReadExisting();
-            dataReceivStr += str;
-            int idx = str.IndexOf('>');
-            AxisRoll = str.Substring(idx + 1, 5);
+            try
+            {
+                string str = serial.ReadTo("\r");
+                dataReceivStr += str;
+                int idx = str.IndexOf('>');
+                AxisRoll = str.Substring(idx + 1, 5);
+            }
+            catch { }
         }
 
         private void SaveFile()
@@ -287,7 +293,7 @@ namespace ControlApp.ViewModels
         private string text2Show;
         private string connectBT_Text;
         private string calibRFC_Text;
-        public string ReadContent { get; set; }
+        private string readContent;
         public string ComName { get; set; }
         public string Rate { get; set; }
         private string axisRoll;
@@ -304,6 +310,8 @@ namespace ControlApp.ViewModels
         public string AxisRoll { get => axisRoll; set => SetProperty(ref axisRoll, value); }
         public string ConnectBT_Text { get => connectBT_Text; set => SetProperty(ref connectBT_Text, value); }
         public string CalibRFC_Text { get => calibRFC_Text; set => SetProperty(ref calibRFC_Text, value); }
+        public string ReadContent { get => readContent; set => SetProperty(ref readContent, value); }
+
         private List<int> RFCValue;
         private SerialDataReceivedEventHandler SerialHandlerRecord;
         #endregion

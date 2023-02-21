@@ -34,6 +34,7 @@ private:
 	float eps = 1;
 	float eps1;
 	float roll;
+	float fDiv;
 	float w_bias;
 	int cnt;
 	int cnt_thres;

@@ -8,6 +8,8 @@
 #include <Kalman_cpp.h>
 #include "math.h"
 
+float PI = 3.1416;
+
 Kalman::Kalman(float z0)
 {
 	x = z0;
@@ -48,12 +50,26 @@ float GradFilter::update(float wz, float gx, float gy, float delT)
         eps = eps1;
 	}
 	float norm = sqrt(gx*gx + gy*gy);
+	if(norm == 0)
+	{
+		w_bias += eps*fDiv*delT;
+		roll += (wz - w_bias - beta*fDiv)*delT;
+		return roll;
+	}
 	float gxNorm = gx/norm;
 	float gyNorm = gy/norm;
-	float fDiv = sin(roll)*gyNorm - cos(roll)*gxNorm;
+	fDiv = sin(roll)*gyNorm - cos(roll)*gxNorm;
 	w_bias += eps*fDiv*delT;
 	float wCalib = wz - w_bias;
 	roll += (wCalib - beta*fDiv)*delT;
+	if (roll >= 2*PI)
+	{
+		roll -= 2*PI;
+	}
+	if (roll <= -2*PI)
+	{
+		roll += 2*PI;
+	}
 	cnt++;
 	return roll;
 }

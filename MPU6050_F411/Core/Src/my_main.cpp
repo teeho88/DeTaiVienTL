@@ -27,15 +27,19 @@ float Roll_IMU = 0;
 GradFilter Filter(15,1,-1);
 char tx2pcData[100];
 
+float acc[3], gyr[3];
+extern float PI;
+
 int myMain(void)
 {
 	uint32_t t_old = __HAL_TIM_GetCounter(&htim2);
 	uint16_t init_loops = 50;
 	uint16_t num_loop = 0;
 	Roll_IMU = 0;
-	float acc[3], gyr[3];
+	uint8_t cnt_trans = 0;
 	while (1)
 	{
+		cnt_trans++;
 		if (strstr((char*) PcData, "IMUCS"))
 		{
 			sprintf(tx2pcData, ">Bat dau hieu chinh MPU6050\r");
@@ -48,8 +52,8 @@ int myMain(void)
 		if (Read_MPU_Calc(acc, gyr) != HAL_OK)
 			continue;
 		float wz = gyr[2];
-		float gx = acc[0];
-		float gy = acc[1];
+		float gx = acc[1];
+		float gy = -acc[0];
 		if (num_loop < init_loops)
 		{
 			Roll_IMU += atan2(gy, gx);
@@ -69,13 +73,13 @@ int myMain(void)
 		t_old = t_cur;
 
 		Roll_IMU = Filter.update(wz, gx, gy, T);
-		Roll_IMU *= (180 / 3.14);
-		if (Roll_IMU >= 360)
+		Roll_IMU *= (180 / PI);
+		if(cnt_trans >= 200)
 		{
-			Roll_IMU -= 360;
+			cnt_trans = 0;
+			sprintf(tx2pcData, ">%.4f|%.4f|%.4f|%.4f|%.4f\r", Roll_IMU, wz, gx, gy, T);
+			HAL_UART_Transmit(&huart2, (uint8_t*) tx2pcData, strlen(tx2pcData), 100);
 		}
-		sprintf(tx2pcData, ">%.4f|%.4f|%.4f|%.4f|%.4f\r", Roll_IMU, wz, gx, gy, T);
-		HAL_UART_Transmit(&huart2, (uint8_t*) tx2pcData, strlen(tx2pcData), 100);
 	}
 }
 
