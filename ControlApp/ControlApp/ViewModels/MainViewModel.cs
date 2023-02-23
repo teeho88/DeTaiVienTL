@@ -69,6 +69,9 @@ namespace ControlApp.ViewModels
                     MessageBox.Show("Please connect COM port");
                     return;
                 }
+                ReadSign = false;
+                ReadContent = "READ";
+                OnPropertyChanged("ReadContent");
                 Text2Show = "Hieu chinh IMU50......\r\n";
                 serial.DataReceived -= SerialHandlerRecord;
                 serial.DataReceived += IMU_Calib;
@@ -84,6 +87,9 @@ namespace ControlApp.ViewModels
                 }
                 if (CalibRFC_Text == "CALIB RFC")
                 {
+                    ReadSign = false;
+                    ReadContent = "READ";
+                    OnPropertyChanged("ReadContent");
                     RFCValue = new List<int>();
                     Text2Show = "Hieu chinh RFC......\r\n(Xoay deu RFC vai vong. An STOP CALIB RFC khi muon ket thuc)\r\n";
                     serial.DataReceived -= SerialHandlerRecord;
@@ -119,7 +125,7 @@ namespace ControlApp.ViewModels
                     dataReceivStr = "";
                     ReadContent = "STOP";
                     OnPropertyChanged("ReadContent");
-                    //serial.DataReceived -= SerialHandlerRecord;
+                    serial.DataReceived -= SerialHandlerRecord;
                     //serial.DataReceived += Serial_DataReceived;
                     //SerialHandlerRecord = Serial_DataReceived;
                     ReadSign = true;
@@ -167,7 +173,6 @@ namespace ControlApp.ViewModels
                 if (int.TryParse(tempStr, out tempInt))
                 {
                     RFCValue.Add(tempInt);
-                    Text2Show = tempStr;
                 }
                 else
                 {
