@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace ControlApp.ViewModels
 {
@@ -118,16 +119,20 @@ namespace ControlApp.ViewModels
                     dataReceivStr = "";
                     ReadContent = "STOP";
                     OnPropertyChanged("ReadContent");
-                    serial.DataReceived -= SerialHandlerRecord;
-                    serial.DataReceived += Serial_DataReceived;
-                    SerialHandlerRecord = Serial_DataReceived;
+                    //serial.DataReceived -= SerialHandlerRecord;
+                    //serial.DataReceived += Serial_DataReceived;
+                    //SerialHandlerRecord = Serial_DataReceived;
+                    ReadSign = true;
+                    Thread dataRead = new Thread(new ThreadStart(ReadData_From_DifferentThread));
+                    dataRead.Start();
                     Text2Show = "Reading data...\r\nPush Stop button when you want to finish collecting data";
                 }
                 else
                 {
                     ReadContent = "READ";
                     OnPropertyChanged("ReadContent");
-                    serial.DataReceived -= Serial_DataReceived;
+                    //serial.DataReceived -= SerialHandlerRecord;
+                    ReadSign = false;
                     Text2Show = "Reading completed\r\nPush Save button to save data";
                 }
             });
@@ -139,6 +144,10 @@ namespace ControlApp.ViewModels
             {
                 Text2Show = "";
             });
+            ClosedWindowCommand = new RelayCommand(x =>
+            {
+                ReadSign = false;
+            });
         }
 
         private void IMU_Calib(object sender, SerialDataReceivedEventArgs e)
@@ -148,34 +157,60 @@ namespace ControlApp.ViewModels
 
         private void RFC_Calib(object sender, SerialDataReceivedEventArgs e)
         {
-            string comingStr = serial.ReadExisting();
-            dataReceivStr = comingStr;
-            int startIdx = dataReceivStr.IndexOf('>');
-            dataReceivStr = dataReceivStr.Substring(startIdx + 1);
-            int endIdx = dataReceivStr.IndexOf('\r');
-            string tempStr = dataReceivStr.Substring(0, endIdx);
-            int tempInt;
-            if (int.TryParse(tempStr, out tempInt))
+            try
             {
-                RFCValue.Add(tempInt);
-                Text2Show = tempStr;
+                string comingStr = serial.ReadTo("\r");
+                int startIdx = comingStr.IndexOf('>');
+                if (startIdx == -1) return;
+                string tempStr = comingStr.Substring(startIdx + 1);
+                int tempInt;
+                if (int.TryParse(tempStr, out tempInt))
+                {
+                    RFCValue.Add(tempInt);
+                    Text2Show = tempStr;
+                }
+                else
+                {
+                    Text2Show = comingStr;
+                }
             }
-            else
-            {
-                Text2Show = comingStr;
-            }
+            catch { }
         }
 
         private void Serial_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             try
             {
-                string str = serial.ReadTo("\r");
+                string str = serial.ReadTo("\n");
                 dataReceivStr += str;
                 int idx = str.IndexOf('>');
                 AxisRoll = str.Substring(idx + 1, 5);
             }
             catch { }
+        }
+
+
+        private bool ReadSign = false;
+        private void ReadData_From_DifferentThread()
+        {
+            while(ReadSign)
+            {
+                try
+                {
+                    string str = serial.ReadLine();
+                    dataReceivStr += str;
+                    int idx = str.IndexOf('>');
+                    AxisRoll = str.Substring(idx + 1, 5);
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    continue;
+                }
+                catch
+                {
+                    break;
+                }
+            }
         }
 
         private void SaveFile()
@@ -228,8 +263,8 @@ namespace ControlApp.ViewModels
                     // Tạo danh sách các column header
                     string[] arrColumnHeader = {"Roll",
                                                 "Gyr_z",
-                                                "ax",
-                                                "ay",
+                                                "Ax",
+                                                "Ay",
                                                 "interval"
                     };
 
@@ -305,12 +340,13 @@ namespace ControlApp.ViewModels
         public RelayCommand ReadCM { get; set; }
         public RelayCommand SaveCM { get; set; }
         public RelayCommand ClearTextCM { get; set; }
+        public RelayCommand ClosedWindowCommand { get; set; }
         public List<string> COMList { get; set; }
         public string Text2Show { get => text2Show; set => SetProperty(ref text2Show, value); }
-        public string AxisRoll { get => axisRoll; set => SetProperty(ref axisRoll, value); }
         public string ConnectBT_Text { get => connectBT_Text; set => SetProperty(ref connectBT_Text, value); }
         public string CalibRFC_Text { get => calibRFC_Text; set => SetProperty(ref calibRFC_Text, value); }
         public string ReadContent { get => readContent; set => SetProperty(ref readContent, value); }
+        public string AxisRoll { get => axisRoll; set => SetProperty(ref axisRoll, value); }
 
         private List<int> RFCValue;
         private SerialDataReceivedEventHandler SerialHandlerRecord;

@@ -16,6 +16,9 @@
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadedWindowCommand}"/>
         </i:EventTrigger>
+        <i:EventTrigger EventName="Closed">
+            <i:InvokeCommandAction Command="{Binding ClosedWindowCommand}"/>
+        </i:EventTrigger>
     </i:Interaction.Triggers>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -162,6 +165,7 @@
                        TextAlignment="Left">
                 </TextBlock>
                 <TextBlock Grid.Column="1"
+                           Name="dmmTB"
                        Text="{Binding AxisRoll}"
                        FontStretch="UltraExpanded"
                        TextAlignment="Left">

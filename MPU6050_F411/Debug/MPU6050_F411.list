@@ -2695,8 +2695,8 @@ int main(void)
   myMpuConfig.CONFIG_DLPF = DLPF_184A_188G_Hz;
  8001a24:	2301      	movs	r3, #1
  8001a26:	70fb      	strb	r3, [r7, #3]
-  myMpuConfig.Gyro_Full_Scale = FS_SEL_250;
- 8001a28:	2300      	movs	r3, #0
+  myMpuConfig.Gyro_Full_Scale = FS_SEL_500;
+ 8001a28:	2301      	movs	r3, #1
  8001a2a:	707b      	strb	r3, [r7, #1]
   myMpuConfig.Sleep_Mode_Bit = 0;  //1: sleep mode, 0: normal mode
  8001a2c:	2300      	movs	r3, #0
@@ -3432,15 +3432,15 @@ int myMain(void)
  8001eae:	ee67 7a27 	vmul.f32	s15, s14, s15
  8001eb2:	4b24      	ldr	r3, [pc, #144]	; (8001f44 <myMain+0x22c>)
  8001eb4:	edc3 7a00 	vstr	s15, [r3]
-		if(cnt_trans >= 200)
+		if(cnt_trans >= 1)
  8001eb8:	f897 3021 	ldrb.w	r3, [r7, #33]	; 0x21
- 8001ebc:	2bc7      	cmp	r3, #199	; 0xc7
- 8001ebe:	f67f af3e 	bls.w	8001d3e <myMain+0x26>
+ 8001ebc:	2b00      	cmp	r3, #0
+ 8001ebe:	f43f af3e 	beq.w	8001d3e <myMain+0x26>
 		{
 			cnt_trans = 0;
  8001ec2:	2300      	movs	r3, #0
  8001ec4:	f887 3021 	strb.w	r3, [r7, #33]	; 0x21
-			sprintf(tx2pcData, ">%.4f|%.4f|%.4f|%.4f|%.4f\r", Roll_IMU, wz, gx, gy, T);
+			sprintf(tx2pcData, ">%.4f|%.4f|%.4f|%.4f|%.4f\r\n", Roll_IMU, wz, gx, gy, T);
  8001ec8:	4b1e      	ldr	r3, [pc, #120]	; (8001f44 <myMain+0x22c>)
  8001eca:	681b      	ldr	r3, [r3, #0]
  8001ecc:	4618      	mov	r0, r3

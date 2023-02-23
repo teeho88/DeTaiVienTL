@@ -123,7 +123,7 @@ int main(void)
   myMpuConfig.Accel_Full_Scale = AFS_SEL_4g;
   myMpuConfig.ClockSource = Internal_8MHz;
   myMpuConfig.CONFIG_DLPF = DLPF_184A_188G_Hz;
-  myMpuConfig.Gyro_Full_Scale = FS_SEL_250;
+  myMpuConfig.Gyro_Full_Scale = FS_SEL_500;
   myMpuConfig.Sleep_Mode_Bit = 0;  //1: sleep mode, 0: normal mode
   MPU6050_Config();
   HAL_TIM_Base_Start(&htim2);
