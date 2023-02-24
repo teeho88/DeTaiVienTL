@@ -139,7 +139,7 @@ int myMain(void)
 		if(cnt_trans >= 1)
 		{
 			cnt_trans = 0;
-			sprintf(tx2pcData, ">%.4f|%.4f|%.4f|%.4f|%.4f\r\n", Roll_IMU, wz, gx, gy, T);
+			sprintf(tx2pcData, ">%.4f|%.4f|%.4f|%.4f|%.4f\r\n", Roll_T, wz, gx, gy, T);
 			HAL_UART_Transmit(&huart2, (uint8_t*) tx2pcData, strlen(tx2pcData), 100);
 		}
 	}

@@ -51,8 +51,8 @@ HAL_StatusTypeDef I2C_Read(uint8_t ADDR, uint8_t *i2cBif, uint8_t NofData)
 	//Need to Shift address to make it proper to i2c operation
 	MPUADDR = (MPU_ADDR<<1);
 	i2cBuf[0] = ADDR;
-	if(HAL_I2C_Master_Transmit(&i2cHandler, MPUADDR, i2cBuf, 1, 5)!= HAL_OK) return HAL_ERROR;
-	if(HAL_I2C_Master_Receive(&i2cHandler, MPUADDR, i2cBif, NofData, 5)!= HAL_OK) return HAL_ERROR;
+	if(HAL_I2C_Master_Transmit(&i2cHandler, MPUADDR, i2cBuf, 1, 100)!= HAL_OK) return HAL_ERROR;
+	if(HAL_I2C_Master_Receive(&i2cHandler, MPUADDR, i2cBif, NofData, 100)!= HAL_OK) return HAL_ERROR;
 	return HAL_OK;
 }
 
@@ -196,6 +196,14 @@ HAL_StatusTypeDef ReadI2C_MPU(void)
 		Gyro.x = (int16_t)((GyroArr[0]<<8) | GyroArr[1]);
 		Gyro.y = (int16_t)((GyroArr[2]<<8) | GyroArr[3]);
 		Gyro.z = (int16_t)((GyroArr[4]<<8) | GyroArr[5]);
+
+		if (Accel.x == 0 && Accel.y == 0 && Accel.z == 0)
+		{
+			HAL_I2C_Init(&i2cHandler);
+			MPU6050_Config();
+			errtest++;
+			return HAL_ERROR;
+		}
 	}
 	else
 	{

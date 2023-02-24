@@ -51,13 +51,13 @@ void Flash_Soft_SetOffset(int RFC_min, int RFC_max)
 
 void Flash_Soft_GetOffset(void)
 {
-	float temp;
+	uint16_t temp;
 	temp = *((uint16_t*)((__IO uint32_t *)(startAddressRFC)));
-	if (isnan(temp)) *minRFC = minRFC_default;
+	if (temp>4095) *minRFC = minRFC_default;
 	else *minRFC = temp;
 
 	temp = *((uint16_t*)((__IO uint32_t *)(startAddressRFC + 4)));
-	if (isnan(temp)) *maxRFC = maxRFC_default;
+	if (temp>4095) *maxRFC = maxRFC_default;
 	else *maxRFC = temp;
 }
 
