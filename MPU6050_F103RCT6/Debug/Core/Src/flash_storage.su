@@ -1,0 +1,3 @@
+../Core/Src/flash_storage.c:15:6:Flash_Assign_Param	24	static
+../Core/Src/flash_storage.c:23:6:Flash_Soft_SetOffset	56	static
+../Core/Src/flash_storage.c:51:6:Flash_Soft_GetOffset	16	static
