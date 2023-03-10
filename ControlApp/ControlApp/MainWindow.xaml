@@ -156,16 +156,17 @@
               VerticalAlignment="Bottom"
                   Background="White">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="3*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="10*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0"
                        Text="Roll"
+                       Background="Yellow"
                        FontStretch="UltraExpanded"
                        TextAlignment="Left">
                 </TextBlock>
-                <TextBlock Grid.Column="1"
-                           Name="dmmTB"
+                <TextBlock Grid.Column="2"
                        Text="{Binding AxisRoll}"
                        FontStretch="UltraExpanded"
                        TextAlignment="Left">

@@ -100,13 +100,24 @@ namespace ControlApp.ViewModels
                 }
                 else
                 {
-                    int minRFC = RFCValue.Min();
-                    int maxRFC = RFCValue.Max();
-                    serial.Write("RFCCE" + minRFC.ToString("0000") + maxRFC.ToString("0000"));
-                    CalibRFC_Text = "CALIB RFC";
-                    Text2Show = String.Format(">Ket thuc hieu chinh RFC:\r\n * Min RFC = {0}\r\n * Max RFC = {1}",minRFC,maxRFC);
+                    try
+                    {
+                        serial.DataReceived -= SerialHandlerRecord;
+                        int minRFC = RFCValue.Min();
+                        int maxRFC = RFCValue.Max();
+                        serial.Write("RFCCE" + minRFC.ToString("0000") + maxRFC.ToString("0000"));
+                        CalibRFC_Text = "CALIB RFC";
+                        Text2Show = String.Format(">Ket thuc hieu chinh RFC:\r\n * Min RFC = {0}\r\n * Max RFC = {1}", minRFC, maxRFC);
+                    }
+                    catch(Exception e)
+                    {
+                        int minRFC = RFCValue.Min();
+                        int maxRFC = RFCValue.Max();
+                        serial.Write("RFCCE" + minRFC.ToString("0000") + maxRFC.ToString("0000"));
+                        CalibRFC_Text = "CALIB RFC";
+                        Text2Show = String.Format(">Ket thuc hieu chinh RFC:\r\n * Min RFC = {0}\r\n * Max RFC = {1}", minRFC, maxRFC);
+                    }
                 }
-
             });
             ComNameDropdown = new RelayCommand(x =>
             {
@@ -174,9 +185,9 @@ namespace ControlApp.ViewModels
                 {
                     RFCValue.Add(tempInt);
                 }
-                else
+                else if(tempStr[0] == '.')
                 {
-                    Text2Show = comingStr;
+                    Text2Show += comingStr;
                 }
             }
             catch { }
@@ -204,8 +215,9 @@ namespace ControlApp.ViewModels
                 {
                     string str = serial.ReadLine();
                     dataReceivStr += str;
-                    int idx = str.IndexOf('>');
-                    AxisRoll = str.Substring(idx + 1, 5);
+                    int start_idx = str.IndexOf('>');
+                    int end_idx = str.IndexOf('*');
+                    AxisRoll = str.Substring(start_idx + 1, end_idx-start_idx-1);
                 }
                 catch (ArgumentOutOfRangeException)
                 {
@@ -303,7 +315,7 @@ namespace ControlApp.ViewModels
                             continue;
 
                         //gán giá trị cho từng cell
-                        string[] data = item.Remove(0, 1).Split('|');
+                        string[] data = item.Remove(0, 1).Split('*','|');
                         if (data.Length != arrColumnHeader.Length)
                             continue;
                         // rowIndex tương ứng từng dòng dữ liệu
@@ -347,11 +359,66 @@ namespace ControlApp.ViewModels
         public RelayCommand ClearTextCM { get; set; }
         public RelayCommand ClosedWindowCommand { get; set; }
         public List<string> COMList { get; set; }
-        public string Text2Show { get => text2Show; set => SetProperty(ref text2Show, value); }
-        public string ConnectBT_Text { get => connectBT_Text; set => SetProperty(ref connectBT_Text, value); }
-        public string CalibRFC_Text { get => calibRFC_Text; set => SetProperty(ref calibRFC_Text, value); }
-        public string ReadContent { get => readContent; set => SetProperty(ref readContent, value); }
-        public string AxisRoll { get => axisRoll; set => SetProperty(ref axisRoll, value); }
+        public string Text2Show
+        {
+            get
+            {
+                return text2Show;
+            }
+
+            set
+            {
+                SetProperty(ref text2Show, value);
+            }
+        }
+        public string ConnectBT_Text
+        {
+            get
+            {
+                return connectBT_Text;
+            }
+
+            set
+            {
+                SetProperty(ref connectBT_Text, value);
+            }
+        }
+        public string CalibRFC_Text
+        {
+            get
+            {
+                return calibRFC_Text;
+            }
+
+            set
+            {
+                SetProperty(ref calibRFC_Text, value);
+            }
+        }
+        public string ReadContent
+        {
+            get
+            {
+                return readContent;
+            }
+
+            set
+            {
+                SetProperty(ref readContent, value);
+            }
+        }
+        public string AxisRoll
+        {
+            get
+            {
+                return axisRoll;
+            }
+
+            set
+            {
+                SetProperty(ref axisRoll, value);
+            }
+        }
 
         private List<int> RFCValue;
         private SerialDataReceivedEventHandler SerialHandlerRecord;
